@@ -3,6 +3,7 @@ const app = require('../db/app.js')
 const db = require('../db/connection.js')
 const seed = require('../db/seeds/seed.js')
 const testData = require('../db/data/test-data')
+const endpoints = require('../db/endpoints.json')
 
 afterAll(()=>{
     return db.end()
@@ -18,8 +19,7 @@ describe('GET /api/topics', () => {
    .get('/api/topics')
    .expect(200)
    .then((res) => {
-    // console.log(res.body)
-    expect(res.body).toEqual([
+    expect(res.body.topics).toEqual([
         { slug: 'mitch', description: 'The man, the Mitch, the legend' },
         { slug: 'cats', description: 'Not dogs' },
         { slug: 'paper', description: 'what books are made of' }
@@ -27,4 +27,15 @@ describe('GET /api/topics', () => {
    })
   }
   )
+})
+
+describe('GET /api/', () => {
+    it('responds wih all of the endpoints that are available', () => {
+      return request(app)
+      .get('/api')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.endpoints).toEqual(endpoints)
+      })
+    })
 })
