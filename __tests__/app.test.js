@@ -12,6 +12,16 @@ afterAll(()=>{
 beforeEach(() => {
   return seed(testData)
 })
+describe('Error handler for incorrect endpoints', () => {
+  it('will handle error for incorrect endpoints', () => {
+    return request(app)
+    .get('/api/dogs')
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe('Endpoint Not Found')
+    })
+  })
+})
 
 describe('GET /api/topics', () => {
   it('responds with all of the topics data', () => {

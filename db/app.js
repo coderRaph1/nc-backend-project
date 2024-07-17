@@ -29,4 +29,8 @@ app.use((err, request, response, next) => {
     }
   
 })
+
+app.all('*', (request, response) => {
+  response.status(404).send({msg: 'Endpoint Not Found'})
+})
 module.exports = app;
