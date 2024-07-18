@@ -18,7 +18,7 @@ describe('Error handler for incorrect endpoints', () => {
     .get('/api/dogs')
     .expect(404)
     .then(({body}) => {
-      expect(body.msg).toBe('Endpoint Not Found')
+      expect(body.msg).toBe('Sorry Endpoint Not Found')
     })
   })
 })
@@ -86,4 +86,29 @@ it('returns a status code 404 when given an invalid article ID number', () => {
   })
 }
 )
+})
+describe('GET /api/articles', () => {
+  it.only('returns the contents from the article table with all the correct properties with dates in descending order', () => {
+    return request(app)
+    .get('/api/articles')
+    .expect(200)
+    .then((response) => {
+    expect(Array.isArray(response.body.articles)).toBe(true);
+    response.body.articles.forEach(article => {
+    expect(article).toHaveProperty('author');
+    expect(article).toHaveProperty('title');
+    expect(article).toHaveProperty('article_id');
+    expect(article).toHaveProperty('topic');
+    expect(article).toHaveProperty('created_at');
+    expect(article).toHaveProperty('votes');
+    expect(article).toHaveProperty('article_img_url');
+    expect(article).toHaveProperty('comment_count');
+    expect(article).not.toHaveProperty('body')
+})
+const dates = response.body.articles.map(article => new Date(article.created_at).getTime());
+for (let i = 1; i < dates.length; i++) {
+  expect(dates[i - 1]).toBeGreaterThanOrEqual(dates[i]);
+}
+        })
+  })
 })
