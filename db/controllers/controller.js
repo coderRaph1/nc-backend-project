@@ -1,4 +1,5 @@
-const {getTopicsModel, fetchArticleById, fetchArticles, fetchComments, checkArticleExist, addCommentToArticle
+const {getTopicsModel, fetchArticleById, fetchArticles, fetchComments, checkArticleExist, addCommentToArticle,
+  incrementVotes
 } = require('../models/model')
 
 
@@ -60,3 +61,19 @@ exports.addComments = (request, response, next) => {
   })
 }
 
+exports.changeVotes = (request, response, next) => {
+  
+  const {article_id} = request.params
+  
+  const { inc_votes } = request.body
+
+  incrementVotes(article_id, inc_votes)
+  .then((article) => {
+    
+  response.status(200).send({article})
+
+}).catch((err) => {
+  
+  next(err)
+})
+}
