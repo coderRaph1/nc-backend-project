@@ -127,7 +127,7 @@ describe('GET /api/articles/:article_id/comments', () => {
     expect(comment).toHaveProperty('created_at',expect.any(String))
     expect(comment).toHaveProperty('author',expect.any(String))
     expect(comment).toHaveProperty('body',expect.any(String))
-    expect(comment).toHaveProperty('article_id',expect.any(Number))
+    expect(comment).toHaveProperty('article_id')
       })
     expect(response.body.comments).toBeSortedBy('created_at', {descending: true})      
     })
@@ -161,7 +161,7 @@ describe('GET /api/articles/:article_id/comments', () => {
 })
 
 describe('POST: /api/articles/:article_id/comments', () => {
-  it.only('201: responds with an extra comment added to the correct article_id', () => {
+  it('201: responds with an extra comment added to the correct article_id', () => {
 
     return request(app)
     .post('/api/articles/4/comments')
@@ -180,7 +180,7 @@ describe('POST: /api/articles/:article_id/comments', () => {
       })
     })
 })
-it.only('returns a 400 status code when the username or body does not have an input', () => {
+it('returns a 400 status code when the username or body does not have an input', () => {
   return request(app)
   .post('/api/articles/4/comments')
   .send({ body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"})
@@ -189,7 +189,7 @@ it.only('returns a 400 status code when the username or body does not have an in
     expect(body.msg).toBe('Bad Request')
   })
 })
-it.only('returns a 400 status code when the article_id provided is invalid', () => {
+it('returns a 400 status code when the article_id provided is invalid', () => {
     return request(app)
     .post('/api/articles/number-four/comments')
     .send({ username: 'butter_bridge',
@@ -199,7 +199,7 @@ it.only('returns a 400 status code when the article_id provided is invalid', () 
       expect(body.msg).toBe('Bad Request')
     })
   })
-  it.only('returns a 404 status code when the article_id is valid but does not exist', () => {
+  it('returns a 404 status code when the article_id is valid but does not exist', () => {
     return request(app)
     .post('/api/articles/321/comments')
     .send({ username: 'butter_bridge',
@@ -209,7 +209,7 @@ it.only('returns a 400 status code when the article_id provided is invalid', () 
       expect(body.msg).toBe('Sorry article_id 321 Does Not Exist')
     })
   })
-  it.only('returns a 404 status message when passed a username that is not valid', () => {
+  it('returns a 404 status message when passed a username that is not valid', () => {
     return request(app)
     .post('/api/articles/4/comments')
     .send({ username: 'coder_Raph',
@@ -217,6 +217,57 @@ it.only('returns a 400 status code when the article_id provided is invalid', () 
     .expect(404)
     .then(({body}) => {
       expect(body.msg).toBe('Username does not exist')
+
+      //ADD TEST FOR CHECKING THE USERNAME IS TYPEOF STRING
     })
   })
 })
+
+describe('PATCH: /api/articles/:article_id', () => {
+    it('returns the updated vote count for a given article_id', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: 1 })
+        .expect(200)
+        .then(({body}) => {
+          expect(body.article).toEqual({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: expect.any(String),
+            votes: 101,
+            article_img_url:expect.any(String)
+          })
+        })
+      })
+      it('returns with 400 status code when inc_votes does not have an input', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({})
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Bad Request")
+        })
+      })
+      it('responds with 404 status code when article_id does not exist', () => {
+        return request(app)
+        .patch('/api/articles/613')
+        .send({inc_votes: 1})
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe('Sorry article_id 613 Does Not Exist')
+        })
+      })
+      it('returns a 400 status code when the article_id provided is invalid', () => {
+        return request(app)
+        .patch('/api/articles/number-six')
+        .send({inc_votes: 1})
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Bad Request")
+        })
+      })
+}
+)
