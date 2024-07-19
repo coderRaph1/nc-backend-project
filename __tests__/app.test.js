@@ -12,6 +12,7 @@ afterAll(()=>{
 beforeEach(() => {
   return seed(testData)
 })
+
 describe('Error handler for incorrect endpoints', () => {
   it('will handle error for incorrect endpoints', () => {
     return request(app)
@@ -88,7 +89,7 @@ it('returns a status code 404 when given an invalid article ID number', () => {
 )
 })
 describe('GET /api/articles', () => {
-  it.only('returns the contents from the article table with all the correct properties with dates in descending order', () => {
+  it('returns the contents from the article table with all the correct properties with dates in descending order', () => {
     return request(app)
     .get('/api/articles')
     .expect(200)
@@ -110,5 +111,112 @@ for (let i = 1; i < dates.length; i++) {
   expect(dates[i - 1]).toBeGreaterThanOrEqual(dates[i]);
 }
         })
+  })
+})
+
+describe('GET /api/articles/:article_id/comments', () => {
+  it('returns commments when passed a specific article_id', () => {
+    return request(app)
+    .get('/api/articles/1/comments')
+    .expect(200)
+    .then((response) => {
+      expect(response.body.comments.length).toBeGreaterThan(0)
+      response.body.comments.forEach((comment) => {
+    expect(comment).toHaveProperty('comment_id',expect.any(Number))
+    expect(comment).toHaveProperty('votes',expect.any(Number))
+    expect(comment).toHaveProperty('created_at',expect.any(String))
+    expect(comment).toHaveProperty('author',expect.any(String))
+    expect(comment).toHaveProperty('body',expect.any(String))
+    expect(comment).toHaveProperty('article_id',expect.any(Number))
+      })
+    expect(response.body.comments).toBeSortedBy('created_at', {descending: true})      
+    })
+  })
+  it('200: article with no commments', () => {
+    return request(app)
+    .get('/api/articles/2/comments')
+    .expect(200)
+    .then((response) => {
+    expect(response.body.comments).toEqual([])
+    })
+  }
+  )
+  it('returns a 400 when given an invalid article_id', () => {
+    return request(app)
+    .get('/api/articles/dogs/comments')
+    .expect(400)
+    .then(({body}) => {
+    expect(body.msg).toBe('Bad Request')
+      })
+  })
+
+  it('returns a status code 404 when given a valid article ID number that does not exist', () => {
+    return request(app)
+    .get('/api/articles/32/comments')
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe('Sorry article_id 32 Does Not Exist')
+    })
+  })
+})
+
+describe('POST: /api/articles/:article_id/comments', () => {
+  it.only('201: responds with an extra comment added to the correct article_id', () => {
+
+    return request(app)
+    .post('/api/articles/4/comments')
+    .send({ username: 'butter_bridge',
+        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!" })
+    .expect(201)
+    .then((response) => {
+      expect(response.body.comment).toEqual({
+        
+        comment_id: 19,
+        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        votes: expect.any(Number),
+        author: "butter_bridge",
+        article_id: 4,
+        created_at:expect.any(String)
+      })
+    })
+})
+it.only('returns a 400 status code when the username or body does not have an input', () => {
+  return request(app)
+  .post('/api/articles/4/comments')
+  .send({ body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"})
+  .expect(400)
+  .then(({body}) => {
+    expect(body.msg).toBe('Bad Request')
+  })
+})
+it.only('returns a 400 status code when the article_id provided is invalid', () => {
+    return request(app)
+    .post('/api/articles/number-four/comments')
+    .send({ username: 'butter_bridge',
+        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe('Bad Request')
+    })
+  })
+  it.only('returns a 404 status code when the article_id is valid but does not exist', () => {
+    return request(app)
+    .post('/api/articles/321/comments')
+    .send({ username: 'butter_bridge',
+        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"})
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe('Sorry article_id 321 Does Not Exist')
+    })
+  })
+  it.only('returns a 404 status message when passed a username that is not valid', () => {
+    return request(app)
+    .post('/api/articles/4/comments')
+    .send({ username: 'coder_Raph',
+        body: "Trust the process"})
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe('Username does not exist')
+    })
   })
 })
