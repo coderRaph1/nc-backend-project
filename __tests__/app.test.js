@@ -271,3 +271,28 @@ describe('PATCH: /api/articles/:article_id', () => {
       })
 }
 )
+describe('DELETE: /api/comments/:comment_id', () => {
+  it('responds with a 204 status code when when comment has been deleted', () => {
+    return request(app)
+    .delete('/api/comments/1')
+    .expect(204)
+  })
+  it('returns a 404 status code when comment_id does not exist',
+    () => {
+      return request(app)
+      .delete('/api/comments/6000')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('Not Found')
+      })
+    }
+  )
+  // it('returns a 400 status code when comment_id is invalid', () => {
+  //   return request(app)
+  //   .delete('/api/comments/number-ten')
+  //   .expect(400)
+  //   .then((body) => {
+  //     expect(body.msg).toBe('Bad Request')
+  //   })
+  // })
+})
