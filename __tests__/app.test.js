@@ -296,3 +296,24 @@ describe('DELETE: /api/comments/:comment_id', () => {
   //   })
   // })
 })
+
+describe('GET: /api/users', () => {
+  it('returns a 200 status code and responds with an array of user objects', () => {
+    return request(app)
+    .get('/api/users')
+    .expect(200)
+    .then(({body}) => {
+      expect(body.users).toHaveLength(4)
+      
+
+    const correctKeys = ["username", "name", "avatar_url"]
+    
+    body.users.forEach((user) => {
+      expect(Object.keys(user)).toHaveLength(3)
+
+    correctKeys.forEach((key) => {
+      expect(typeof user[key]).toBe("string")})
+  })
+  })
+  })
+})
