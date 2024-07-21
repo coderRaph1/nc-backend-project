@@ -30,7 +30,6 @@ app.delete('/api/comments/:comment_id', deleteComments)
 
 app.get('/api/users', getUsers)
 
-
 //ERROR HANDLERS
 
 app.use((err, request, response, next) => {

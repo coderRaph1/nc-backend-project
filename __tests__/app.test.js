@@ -304,10 +304,9 @@ describe('GET: /api/users', () => {
     .expect(200)
     .then(({body}) => {
       expect(body.users).toHaveLength(4)
-      
 
     const correctKeys = ["username", "name", "avatar_url"]
-    
+
     body.users.forEach((user) => {
       expect(Object.keys(user)).toHaveLength(3)
 
@@ -317,3 +316,4 @@ describe('GET: /api/users', () => {
   })
   })
 })
+
