@@ -1,5 +1,5 @@
 const {getTopicsModel, fetchArticleById, fetchArticles, fetchComments, checkArticleExist, addCommentToArticle,
-  incrementVotes
+  incrementVotes, fetchDeletedComments, fetchUsers
 } = require('../models/model')
 
 
@@ -76,4 +76,30 @@ exports.changeVotes = (request, response, next) => {
   
   next(err)
 })
+}
+
+exports.deleteComments = (request, response, next) => {
+
+  const {comment_id} = request.params
+
+  return fetchDeletedComments(comment_id)
+
+  .then(() => {
+
+    response.status(204).send()
+
+  }).catch((err) => {
+    next(err)
+  })
+
+}
+
+exports.getUsers = (request, response, next) => {
+
+  fetchUsers()
+  .then((users) => {
+  response.status(200).send({ users })
+  }).catch((err) => {
+    next(err)
+  })
 }

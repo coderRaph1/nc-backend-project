@@ -1,6 +1,27 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "serves up a json representation of all the available endpoints of the api",
+    "exampleResponse": { "endpoints": "<this JSON parsed to an object>" }
+  },
+  "GET /api/users": {
+    "description": "Get all users",
+    "exampleResponse": [
+      {
+        "username": "weegembump",
+        "name": "Killoah",
+        "avatar_url": "www.example.com/avatar_image_url"
+      }
+    ]
+  },
+  "GET /api/users/:username": {
+    "description": "Get a user",
+    "exampleResponse": {
+      "user": {
+        "username": "weegembump",
+        "name": "Killoah",
+        "avatar_url": "www.example.com/avatar_image_url"
+      }
+    }
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
@@ -11,7 +32,21 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": {
+      "author": "",
+      "topic": "<topic-slug>",
+      "sort_by": [
+        "author",
+        "title",
+        "article_id",
+        "topic",
+        "created_at",
+        "votes",
+        "article_img_url",
+        "comment_count"
+      ],
+      "order": ["asc", "desc"]
+    },
     "exampleResponse": {
       "articles": [
         {
@@ -25,5 +60,104 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article by it's ID",
+    "queries": {
+      "author": "",
+      "topic": "<topic-slug>",
+      "sort_by": [
+        "author",
+        "title",
+        "article_id",
+        "topic",
+        "created_at",
+        "votes",
+        "article_img_url",
+        "comment_count"
+      ],
+      "order": ["asc", "desc"]
+    },
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": "3",
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0,
+          "article_img_url": "www.example.com/article_image_url"
+        }
+      ]
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Update an article vote count by article_id",
+    "format": { "inc_votes": 1 },
+    "exampleResponse": {
+      "updatedArticle": [
+        {
+          "article_id": "3",
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 1,
+          "article_img_url": "www.example.com/article_image_url"
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "Get all comments for an article",
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 6,
+          "body": "The owls are not what they seem.",
+          "votes": 20,
+          "author": "icellusedkars",
+          "article_id": 9,
+          "created_at": 1584205320000
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Add a comment to an article",
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 6,
+          "body": "The owls are not what they seem.",
+          "votes": 20,
+          "author": "icellusedkars",
+          "article_id": 9,
+          "created_at": 1584205320000
+        }
+      ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Update a comment vote count by comment_id",
+    "format": { "inc_votes": 1 },
+    "exampleResponse": {
+      "updatedComment": [
+        {
+          "comment_id": 6,
+          "body": "The owls are not what they seem.",
+          "votes": 21,
+          "author": "icellusedkars",
+          "article_id": 9,
+          "created_at": 1584205320000
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Delete the given comment by comment_id"
   }
 }

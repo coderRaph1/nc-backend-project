@@ -271,3 +271,49 @@ describe('PATCH: /api/articles/:article_id', () => {
       })
 }
 )
+describe('DELETE: /api/comments/:comment_id', () => {
+  it('responds with a 204 status code when when comment has been deleted', () => {
+    return request(app)
+    .delete('/api/comments/1')
+    .expect(204)
+  })
+  it('returns a 404 status code when comment_id does not exist',
+    () => {
+      return request(app)
+      .delete('/api/comments/6000')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('Not Found')
+      })
+    }
+  )
+  // it('returns a 400 status code when comment_id is invalid', () => {
+  //   return request(app)
+  //   .delete('/api/comments/number-ten')
+  //   .expect(400)
+  //   .then((body) => {
+  //     expect(body.msg).toBe('Bad Request')
+  //   })
+  // })
+})
+
+describe('GET: /api/users', () => {
+  it('returns a 200 status code and responds with an array of user objects', () => {
+    return request(app)
+    .get('/api/users')
+    .expect(200)
+    .then(({body}) => {
+      expect(body.users).toHaveLength(4)
+
+    const correctKeys = ["username", "name", "avatar_url"]
+
+    body.users.forEach((user) => {
+      expect(Object.keys(user)).toHaveLength(3)
+
+    correctKeys.forEach((key) => {
+      expect(typeof user[key]).toBe("string")})
+  })
+  })
+  })
+})
+

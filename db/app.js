@@ -5,7 +5,9 @@ const { getTopicsController,
         getArticles,
         getComments,
         addComments,
-        changeVotes } = require("./controllers/controller");
+        changeVotes, 
+        deleteComments,
+        getUsers} = require("./controllers/controller");
 const { getApiController } = require("./controllers/get-api-controller")
 
 app.use(express.json())
@@ -24,6 +26,9 @@ app.post('/api/articles/:article_id/comments', addComments)
 
 app.patch('/api/articles/:article_id', changeVotes)
 
+app.delete('/api/comments/:comment_id', deleteComments)
+
+app.get('/api/users', getUsers)
 
 //ERROR HANDLERS
 
