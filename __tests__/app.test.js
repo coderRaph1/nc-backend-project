@@ -317,3 +317,83 @@ describe('GET: /api/users', () => {
   })
 })
 
+describe("/api/articles", () => {
+  it("GET: 200 should respond with an array containing the article data", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  it("Should be in order DESC by date", () => {
+    return request(app)
+      .get("/api/articles")
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", {
+          coerce: true,
+          descending: true,
+        });
+      });
+  });
+  it("Should be able to sort by any of the allowed values: title, topic, author, body, article_img_url", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", {
+          coerce: true,
+          descending: true,
+        });
+      });
+  });
+  it("Should be allowed to be ordered by either DESC or ASC", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", {
+          coerce: true,
+          ascending: true,
+        });
+      });
+  });
+  it("400: When an incorrect value is input, returns an error", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("incorrect input");
+      });
+  });
+  it.only("200: Will return all articles when inputting the topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+  it("404: Returns an error when a topic isn't found within the database", () => {
+    return request(app)
+      .get("/api/articles?topic=incorrect")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Topic not found");
+      });
+  });
+});
+
