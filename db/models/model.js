@@ -18,44 +18,34 @@ exports.fetchArticleById = (article_id) => {
     })
 }
 
-exports.fetchArticles = (sort_by, order, topic) => {
-  //create OG string
+exports.fetchArticles = () => {
+  
+  
+  
 
-  let queryStr = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`
-
-  //check that topic exists (through a function)
-const queryValues = []
-const promiseArray = []
-const validSortBy = ['title','topic','author','created_at', 'body', 'article_img_url']
-
-
-if (topic){
-    //update the OG SQL 
-    queryStr += ` WHERE articles.topic = $1`
-    queryValues.push(topic)
-    promiseArray.push(checkTopicExists(topic))   
-
-  }
-queryStr += ` GROUP BY articles.article_id`
-
-
-
-
-const articlesQuery = db.query (queryStr, queryValues)
-promiseArray.push(articlesQuery)
-return Promise.all(promiseArray).then((result) => {
-  return result[1].rows
-})
-
-//Error handling for if there is no topic
-
-  //create greenlist for suitable sort_by
-  //check if sort_by is greenlisted
-  //update the OG(1) SQL 
-
-  //create greenlist for suitable order
-  //check if order is greenlisted
-  //update the OG(2) SQL 
+  return db.query( ` SELECT 
+      articles.article_id, 
+      articles.author, 
+      articles.title, 
+      articles.topic, 
+      articles.created_at, 
+      articles.votes, 
+      articles.article_img_url, 
+      COUNT(comments.comment_id) AS comment_count 
+    FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id 
+    GROUP BY 
+      articles.article_id, 
+      articles.author, 
+      articles.title, 
+      articles.topic, 
+      articles.created_at, 
+      articles.votes, 
+      articles.article_img_url
+    ORDER BY articles.created_at DESC;` )
+  .then(({rows}) => {
+    return rows
+  })
 }
 
 function checkTopicExists(topic){
@@ -159,3 +149,45 @@ exports.checkIfCommentExists = (comment_id) => {
     return rows.length > 0
   })
 }
+
+
+
+// exports.fetchArticles = (sort_by, order, topic) => {
+//   //create OG string
+
+//   let queryStr = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`
+
+//   //check that topic exists (through a function)
+// const queryValues = []
+// const promiseArray = []
+// const validSortBy = ['title','topic','author','created_at', 'body', 'article_img_url']
+
+
+// if (topic){
+//     //update the OG SQL 
+//     queryStr += ` WHERE articles.topic = $1`
+//     queryValues.push(topic)
+//     promiseArray.push(checkTopicExists(topic))   
+
+//   }
+// queryStr += ` GROUP BY articles.article_id`
+
+
+
+
+// const articlesQuery = db.query (queryStr, queryValues)
+// promiseArray.push(articlesQuery)
+// return Promise.all(promiseArray).then((result) => {
+//   return result[1].rows
+// })
+
+// //Error handling for if there is no topic
+
+//   //create greenlist for suitable sort_by
+//   //check if sort_by is greenlisted
+//   //update the OG(1) SQL 
+
+//   //create greenlist for suitable order
+//   //check if order is greenlisted
+//   //update the OG(2) SQL 
+// }
