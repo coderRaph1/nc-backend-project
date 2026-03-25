@@ -30,6 +30,7 @@ describe('GET /api/topics', () => {
    .get('/api/topics')
    .expect(200)
    .then((res) => {
+    console.log(res.body)
     expect(res.body.topics).toEqual([
         { slug: 'mitch', description: 'The man, the Mitch, the legend' },
         { slug: 'cats', description: 'Not dogs' },
